@@ -39,7 +39,3 @@ Cypress.Commands.add('login', () => {
       cacheAcrossSpecs: true,
     })
 })
-
-Cypress.Commands.add('resetDB', () => {   
-  cy.log('Aqui')
-})
