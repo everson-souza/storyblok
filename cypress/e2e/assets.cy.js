@@ -169,7 +169,7 @@ context('Assets', () => {
       deleteAsset()
     })
 
-    it('Should permanently delete all', () => {
+    it('Should permanently delete all assets', () => {
       //Creating an asset
       createAsset('storyblok.gif', 'logoGif')
       
