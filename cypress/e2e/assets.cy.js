@@ -43,6 +43,10 @@ context('Assets', () => {
   }
 
   before(() => {
+  })
+
+  beforeEach(() => {
+    cy.viewport(1440, 606)
     cy.intercept('GET', '/*/spaces/*/assets*').as('getAssets')
     cy.intercept('GET', '/*/spaces/*/asset_folders*').as('getFolders')
 
@@ -50,21 +54,18 @@ context('Assets', () => {
     cy.visit('/#/me/spaces/')
     cy.get('[data-testid="column-space-item"]').eq(0).click()
     cy.get('[data-testid="app-sidebar-route__ListAssetsRoute"]').click()
-    
+
     cy.wait('@getFolders')
     cy.wait('@getAssets')
 
-    // Delete all existing folders
+    // Cleanup
     cy.get('body').then(($body) => {      
+      // Delete all existing folders
       if ($body.find('.asset-folder-selector-item__menu').length) {
         cy.get('.asset-folder-selector-item__menu').should('exist').then(($folders) => {
           if ($folders.length > 0) {
             for (let i = 0; i < $folders.length; i++) {
-              cy.get('.asset-folder-selector-item__menu').first().click()
-              cy.get('#portal-wrapper').find('.sb-menu-item').contains('Delete').click()
-              cy.intercept('GET', '/*/spaces/*/asset_folders*').as('getDeleteFolder')
-              cy.get('[data-testid="delete-tab-modal-button"]').click()
-              cy.wait('@getDeleteFolder')
+              deleteFolder()
             }
           }
         });
@@ -74,24 +75,12 @@ context('Assets', () => {
         cy.get('.assets-list-item__container').should('exist').then(($assets) => {
           if ($assets.length > 0) {
             for (let i = 0; i < $assets.length; i++) {
-              cy.get('.assets-list-item__container').first().find('.sb-button--primary').click({force: true})
-              cy.get('.sb-menu-item').contains('Delete').click({force: true})
-              cy.intercept('GET', '/*/spaces/*/assets*').as('getAssetsDelete')
-              cy.get('[data-testid="delete-tab-modal-button"]').click()
-              cy.wait('@getAssetsDelete')
+              deleteAsset()
             }
           }
         });
       }
-    }) 
-  })
-
-  beforeEach(() => {
-    cy.viewport(1440, 606)
-    cy.login()
-    cy.visit('/#/me/spaces/')
-    cy.get('[data-testid="column-space-item"]').eq(0).click()
-    cy.get('[data-testid="app-sidebar-route__ListAssetsRoute"]').click()
+    })
   })
 
   describe('Folders', () => {
